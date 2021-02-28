@@ -10,21 +10,49 @@ wb = 2.14348309e-7;
 image_list_1.dir = dir(fullfile('./misc/', '*.tiff'));
 image_list_2.dir = dir(fullfile('./BSR/BSDS500/data/images/train/', '*.jpg'));
 image_list_3.dir = dir(fullfile('./screenshots/', '*.JPG'));
-white = imread("./misc/white.png");
-black = imread("./misc/black.png");
-
-
+% white = imread("./misc/white.png");
+% black = imread("./misc/black.png");
+% 
+% 
 
 image_list_1.original_power = zeros(1, length(image_list_1.dir));
 image_list_1.hungry_blue_consumption = zeros(1, 5);
 image_list_1.name = strings(1, length(image_list_1.dir));
-
-image_list_2.original_power = zeros(1, length(image_list_2.dir));
-image_list_2.name = strings(1, length(image_list_2.dir));
-
-image_list_3.original_power = zeros(1, length(image_list_3.dir));
-image_list_3.name = strings(1, length(image_list_3.dir));
-
+image_list_1.best_hungry_blue_value_1 = zeros(1, length(image_list_1.dir));
+image_list_1.best_power_consumption_1 = zeros(1, length(image_list_1.dir));
+image_list_1.best_hungry_blue_value_5 = zeros(1, length(image_list_1.dir));
+image_list_1.best_power_consumption_5 = zeros(1, length(image_list_1.dir));
+image_list_1.best_hungry_blue_value_10 = zeros(1, length(image_list_1.dir));
+image_list_1.best_power_consumption_10 = zeros(1, length(image_list_1.dir));
+image_list_1.best_power_consumption_hist_eq_1 = zeros(1, length(image_list_1.dir));
+image_list_1.best_power_consumption_hist_eq_5 = zeros(1, length(image_list_1.dir));
+image_list_1.best_power_consumption_hist_eq_10 = zeros(1, length(image_list_1.dir));
+% 
+% 
+% image_list_2.original_power = zeros(1, length(image_list_2.dir));
+% image_list_2.name = strings(1, length(image_list_2.dir));
+% image_list_2.best_hungry_blue_value_1 = zeros(1, length(image_list_2.dir));
+% image_list_2.best_power_consumption_1 = zeros(1, length(image_list_2.dir));
+% image_list_2.best_hungry_blue_value_5 = zeros(1, length(image_list_2.dir));
+% image_list_2.best_power_consumption_5 = zeros(1, length(image_list_2.dir));
+% image_list_2.best_hungry_blue_value_10 = zeros(1, length(image_list_2.dir));
+% image_list_2.best_power_consumption_10 = zeros(1, length(image_list_2.dir));
+% image_list_2.best_power_consumption_hist_eq_1 = zeros(1, length(image_list_2.dir));
+% image_list_2.best_power_consumption_hist_eq_5 = zeros(1, length(image_list_2.dir));
+% image_list_2.best_power_consumption_hist_eq_10 = zeros(1, length(image_list_2.dir));
+% 
+% image_list_3.original_power = zeros(1, length(image_list_3.dir));
+% image_list_3.name = strings(1, length(image_list_3.dir));
+% image_list_3.best_hungry_blue_value_1 = zeros(1, length(image_list_3.dir));
+% image_list_3.best_power_consumption_1 = zeros(1, length(image_list_3.dir));
+% image_list_3.best_hungry_blue_value_5 = zeros(1, length(image_list_3.dir));
+% image_list_3.best_power_consumption_5 = zeros(1, length(image_list_3.dir));
+% image_list_3.best_hungry_blue_value_10 = zeros(1, length(image_list_3.dir));
+% image_list_3.best_power_consumption_10 = zeros(1, length(image_list_3.dir));
+% image_list_3.best_power_consumption_hist_eq_1 = zeros(1, length(image_list_3.dir));
+% image_list_3.best_power_consumption_hist_eq_5 = zeros(1, length(image_list_3.dir));
+% image_list_3.best_power_consumption_hist_eq_10 = zeros(1, length(image_list_3.dir));
+% 
 for k = 1:length(image_list_1.dir)
     image_path = strcat(image_list_1.dir(k).folder, '/', image_list_1.dir(k).name);
     image = imread(image_path);
@@ -32,7 +60,7 @@ for k = 1:length(image_list_1.dir)
     image_list_1.original_power(1,k) =  power_consumption(y, w0, wr, wg, wb, image);
     image_list_1.name(1,k) = image_list_1.dir(k).name;
 end
-% 
+% % 
 % for k = 1:length(image_list_2.dir)
 %     image_path = strcat(image_list_2.dir(k).folder, '/', image_list_2.dir(k).name);
 %     image = imread(image_path);
@@ -48,14 +76,14 @@ end
 %     image_list_3.original_power(1,k) =  power_consumption(y, w0, wr, wg, wb, image);
 %     image_list_3.name(1,k) = image_list_3.dir(k).name;
 % end
-% 
-% 
-% 
-% Conversion to L*a*b space
-parfor k = 1:length(image_list_1.dir)
-    image_list_1_lab{k} = rgb2lab(image_list_1_rgb{k});
-end
-% 
+% % 
+% % 
+% % 
+% % Conversion to L*a*b space
+% parfor k = 1:length(image_list_1.dir)
+%     image_list_1_lab{k} = rgb2lab(image_list_1_rgb{k});
+% end
+% % 
 % parfor k = 1:length(image_list_2.dir)
 %     image_list_2_lab{k} = rgb2lab(image_list_2_rgb{k});
 % end
@@ -304,46 +332,466 @@ end
 % title("Image list 3 Histogram equalization percentage difference")
 % yline(mean(image_list_3.im_eq_difference),"-.b","Mean value");
 
-% Best image manipulation given some constrains
-avg_distortion = [0.01 0.5 0.10];
 
-test_image_rgb = image_list_1_rgb{1};
-test_image_lab = image_list_1_lab{1};
-test_image_orginal_power = image_list_1.original_power(1);
-test_image_min_power = inf;
-test_image_eucl_diff_min = inf;
-hungry_blue_value = -1;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Best image manipulation given some constrains
+avg_distortion = [0.01 0.05 0.10];
+
 
 % Euclidian difference
 %   -Hungry blue
-for k = 1:255
-    transformed_image = hungry_blue(test_image_rgb, k);
-    transformed_power_consumption(k) = power_consumption(y,w0,wr,wg,wb,transformed_image);
-    transformed_image_difference(k) = image_diff(test_image_lab, rgb2lab(transformed_image));
-    transformed_image_relative_difference(k) = (transformed_image_difference(k) / image_diff(rgb2lab(white),rgb2lab(black)));
+%   Image list 1
+% for index = 1:length(image_list_1.dir)
+%     test_image_rgb = image_list_1_rgb{index};
+%     test_image_lab = image_list_1_lab{index};
+%     test_image_orginal_power = image_list_1.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     hungry_blue_value = -1;
+%     
+%     for k = 1:255
+%         transformed_image = hungry_blue(test_image_rgb, k);
+%         transformed_power_consumption(k) = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%         transformed_image_difference(k) = image_diff(test_image_lab, rgb2lab(transformed_image));
+%         transformed_image_relative_difference(k) = (transformed_image_difference(k) / image_diff(rgb2lab(white),rgb2lab(black)));
+% 
+%         if(transformed_image_relative_difference(k) < avg_distortion(1))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_1.best_hungry_blue_value_1(index) = k;
+%                 image_list_1.best_power_consumption_1(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_relative_difference(k) < avg_distortion(2))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_1.best_hungry_blue_value_5(index) = k;
+%                 image_list_1.best_power_consumption_5(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_relative_difference(k) < avg_distortion(3))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_1.best_hungry_blue_value_10(index) = k;
+%                 image_list_1.best_power_consumption_10(index) = transformed_power_consumption(k);
+%             end
+%         end
+%     end
+% end
+% 
+% % Image list 2
+% for index = 1:length(image_list_2.dir)
+%     test_image_rgb = image_list_2_rgb{index};
+%     test_image_lab = image_list_2_lab{index};
+%     test_image_orginal_power = image_list_2.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     hungry_blue_value = -1;
+%     
+%     for k = 1:255
+%         transformed_image = hungry_blue(test_image_rgb, k);
+%         transformed_power_consumption(k) = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%         transformed_image_difference(k) = image_diff(test_image_lab, rgb2lab(transformed_image));
+%         transformed_image_relative_difference(k) = (transformed_image_difference(k) / image_diff(rgb2lab(white),rgb2lab(black)));
+% 
+%         if(transformed_image_relative_difference(k) < avg_distortion(1))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_2.best_hungry_blue_value_1(index) = k;
+%                 image_list_2.best_power_consumption_1(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_relative_difference(k) < avg_distortion(2))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_2.best_hungry_blue_value_5(index) = k;
+%                 image_list_2.best_power_consumption_5(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_relative_difference(k) < avg_distortion(3))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_2.best_hungry_blue_value_10(index) = k;
+%                 image_list_2.best_power_consumption_10(index) = transformed_power_consumption(k);
+%             end
+%         end
+%     end
+% end
+% %Image list 3
+% for index = 1:length(image_list_3.dir)
+%     test_image_rgb = image_list_3_rgb{index};
+%     test_image_lab = image_list_3_lab{index};
+%     test_image_orginal_power = image_list_3.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     hungry_blue_value = -1;
+%     
+%     for k = 1:255
+%         transformed_image = hungry_blue(test_image_rgb, k);
+%         transformed_power_consumption(k) = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%         transformed_image_difference(k) = image_diff(test_image_lab, rgb2lab(transformed_image));
+%         transformed_image_relative_difference(k) = (transformed_image_difference(k) / image_diff(rgb2lab(white),rgb2lab(black)));
+% 
+%         if(transformed_image_relative_difference(k) < avg_distortion(1))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_3.best_hungry_blue_value_1(index) = k;
+%                 image_list_3.best_power_consumption_1(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_relative_difference(k) < avg_distortion(2))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_3.best_hungry_blue_value_5(index) = k;
+%                 image_list_3.best_power_consumption_5(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_relative_difference(k) < avg_distortion(3))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_3.best_hungry_blue_value_10(index) = k;
+%                 image_list_3.best_power_consumption_10(index) = transformed_power_consumption(k);
+%             end
+%         end
+%     end
+% end
+% 
+% 
+% %   -Histogram equalization
+% %   Image list 1
+% for index = 1:length(image_list_1.dir)
+%     test_image_rgb = image_list_1_rgb{index};
+%     test_image_lab = image_list_1_lab{index};
+%     test_image_orginal_power = image_list_1.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     
+%     transformed_image = histeq(test_image_rgb);
+%     transformed_power_consumption = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%     transformed_image_difference = image_diff(test_image_lab, rgb2lab(transformed_image));
+%     transformed_image_relative_difference = (transformed_image_difference / image_diff(rgb2lab(white),rgb2lab(black)));
+% 
+%     if(transformed_image_relative_difference < avg_distortion(1))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_1.best_power_consumption_hist_eq_1(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_relative_difference < avg_distortion(2))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_1.best_power_consumption_hist_eq_5(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_relative_difference < avg_distortion(3))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_1.best_power_consumption_hist_eq_10(index) = transformed_power_consumption;
+%         end
+%     end
+% end
+% %   Image list 2
+% for index = 1:length(image_list_2.dir)
+%     test_image_rgb = image_list_2_rgb{index};
+%     test_image_lab = image_list_2_lab{index};
+%     test_image_orginal_power = image_list_2.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     
+%     transformed_image = histeq(test_image_rgb);
+%     transformed_power_consumption = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%     transformed_image_difference = image_diff(test_image_lab, rgb2lab(transformed_image));
+%     transformed_image_relative_difference = (transformed_image_difference / image_diff(rgb2lab(white),rgb2lab(black)));
+% 
+%     if(transformed_image_relative_difference < avg_distortion(1))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_2.best_power_consumption_hist_eq_1(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_relative_difference < avg_distortion(2))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_2.best_power_consumption_hist_eq_5(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_relative_difference < avg_distortion(3))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_2.best_power_consumption_hist_eq_10(index) = transformed_power_consumption;
+%         end
+%     end
+% end
+% %   Image list 3
+% for index = 1:length(image_list_3.dir)
+%     test_image_rgb = image_list_3_rgb{index};
+%     test_image_lab = image_list_3_lab{index};
+%     test_image_orginal_power = image_list_3.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     
+%     transformed_image = histeq(test_image_rgb);
+%     transformed_power_consumption = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%     transformed_image_difference = image_diff(test_image_lab, rgb2lab(transformed_image));
+%     transformed_image_relative_difference = (transformed_image_difference / image_diff(rgb2lab(white),rgb2lab(black)));
+% 
+%     if(transformed_image_relative_difference < avg_distortion(1))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_3.best_power_consumption_hist_eq_1(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_relative_difference < avg_distortion(2))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_3.best_power_consumption_hist_eq_5(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_relative_difference < avg_distortion(3))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_3.best_power_consumption_hist_eq_10(index) = transformed_power_consumption;
+%         end
+%     end
+% end
+
+
+
+% SSIM difference
+%   -Hungry blue
+%   Image list 1
+% for index = 1:length(image_list_1.dir)
+%     test_image_rgb = image_list_1_rgb{index};
+%     test_image_orginal_power = image_list_1.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_ssim_diff_min = inf;
+%     hungry_blue_value = -1;
+%     
+%     for k = 1:255
+%         transformed_image = hungry_blue(test_image_rgb, k);
+%         transformed_power_consumption(k) = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%         transformed_image_difference(k) =  ssim(test_image_rgb, transformed_image); 
+% 
+%         if(transformed_image_difference(k) < avg_distortion(1))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_1.best_hungry_blue_value_1(index) = k;
+%                 image_list_1.best_power_consumption_1(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_difference(k) < avg_distortion(2))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_1.best_hungry_blue_value_5(index) = k;
+%                 image_list_1.best_power_consumption_5(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_difference(k) < avg_distortion(3))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_1.best_hungry_blue_value_10(index) = k;
+%                 image_list_1.best_power_consumption_10(index) = transformed_power_consumption(k);
+%             end
+%         end
+%     end
+% end
+% 
+% % Image list 2
+% for index = 1:length(image_list_2.dir)
+%     test_image_rgb = image_list_2_rgb{index};
+%     test_image_orginal_power = image_list_2.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     hungry_blue_value = -1;
+%     
+%     for k = 1:255
+%         transformed_image = hungry_blue(test_image_rgb, k);
+%         transformed_power_consumption(k) = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%         transformed_image_difference(k) =  ssim(test_image_rgb, transformed_image); 
+%         
+%         if(transformed_image_difference(k) < avg_distortion(1))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_2.best_hungry_blue_value_1(index) = k;
+%                 image_list_2.best_power_consumption_1(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_difference(k) < avg_distortion(2))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_2.best_hungry_blue_value_5(index) = k;
+%                 image_list_2.best_power_consumption_5(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_difference(k) < avg_distortion(3))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_2.best_hungry_blue_value_10(index) = k;
+%                 image_list_2.best_power_consumption_10(index) = transformed_power_consumption(k);
+%             end
+%         end
+%     end
+% end
+% %Image list 3
+% for index = 1:length(image_list_3.dir)
+%     test_image_rgb = image_list_3_rgb{index};
+%     test_image_orginal_power = image_list_3.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     hungry_blue_value = -1;
+%     
+%     for k = 1:255
+%         transformed_image = hungry_blue(test_image_rgb, k);
+%         transformed_power_consumption(k) = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%         transformed_image_difference(k) =  ssim(test_image_rgb, transformed_image); 
+%         
+% 
+%         if(transformed_image_difference(k) < avg_distortion(1))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_3.best_hungry_blue_value_1(index) = k;
+%                 image_list_3.best_power_consumption_1(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_difference(k) < avg_distortion(2))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_3.best_hungry_blue_value_5(index) = k;
+%                 image_list_3.best_power_consumption_5(index) = transformed_power_consumption(k);
+%             end
+%         end
+%         
+%         if(transformed_image_difference(k) < avg_distortion(3))
+%             if(transformed_power_consumption(k) < test_image_orginal_power)
+%                 image_list_3.best_hungry_blue_value_10(index) = k;
+%                 image_list_3.best_power_consumption_10(index) = transformed_power_consumption(k);
+%             end
+%         end
+%     end
+% end
+
+
+%   -Histogram equalization
+%   Image list 1
+% for index = 1:length(image_list_1.dir)
+%     test_image_rgb = image_list_1_rgb{index};
+%     test_image_orginal_power = image_list_1.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     
+%     transformed_image = histeq(test_image_rgb);
+%     transformed_power_consumption = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%     transformed_image_difference =  ssim(test_image_rgb, transformed_image); 
+% 
+%     if(transformed_image_difference < avg_distortion(1))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_1.best_power_consumption_hist_eq_1(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_difference < avg_distortion(2))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_1.best_power_consumption_hist_eq_5(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_difference < avg_distortion(3))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_1.best_power_consumption_hist_eq_10(index) = transformed_power_consumption;
+%         end
+%     end
+% end
+% %   Image list 2
+% for index = 1:length(image_list_2.dir)
+%     test_image_rgb = image_list_2_rgb{index};
+%     test_image_orginal_power = image_list_2.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     
+%     transformed_image = histeq(test_image_rgb);
+%     transformed_power_consumption = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%     transformed_image_difference =  ssim(test_image_rgb, transformed_image);
+% 
+%     if(transformed_image_difference < avg_distortion(1))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_2.best_power_consumption_hist_eq_1(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_difference < avg_distortion(2))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_2.best_power_consumption_hist_eq_5(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_difference < avg_distortion(3))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_2.best_power_consumption_hist_eq_10(index) = transformed_power_consumption;
+%         end
+%     end
+% end
+% %   Image list 3
+% for index = 1:length(image_list_3.dir)
+%     test_image_rgb = image_list_3_rgb{index};
+%     test_image_orginal_power = image_list_3.original_power(index);
+%     test_image_min_power = inf;
+%     test_image_eucl_diff_min = inf;
+%     
+%     transformed_image = histeq(test_image_rgb);
+%     transformed_power_consumption = power_consumption(y,w0,wr,wg,wb,transformed_image);
+%     transformed_image_difference =  ssim(test_image_rgb, transformed_image);
+% 
+%     if(transformed_image_difference < avg_distortion(1))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_3.best_power_consumption_hist_eq_1(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_difference < avg_distortion(2))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_3.best_power_consumption_hist_eq_5(index) = transformed_power_consumption;
+%         end
+%     end
+%     
+%     if(transformed_image_difference < avg_distortion(3))
+%         if(transformed_power_consumption < test_image_orginal_power)
+%             image_list_3.best_power_consumption_hist_eq_10(index) = transformed_power_consumption;
+%         end
+%     end
+% end
+
+% Custom Manipulation with SSIM
+% image_base = image_list_1_rgb{13};
+% P_image_base = power_consumption(y,w0,wr,wg,wb,image_base);
+% image_test = custom_man(image_base, 30);
+% P_test = power_consumption(y,w0,wr,wg,wb,image_test);
+
+for index = 1:length(image_list_1.dir)
+    test_image_rgb = image_list_1_rgb{index};
+    test_image_orginal_power = image_list_1.original_power(index);
+    test_image_min_power = inf;
+    test_image_ssim_diff_min = inf;
+    hungry_blue_value = -1;
     
-    
-    if(transformed_image_relative_difference(k) < avg_distortion(1))
-        if(transformed_power_consumption(k) < test_image_orginal_power)
-            disp(k)
-            hungry_blue_value = k;
+    for k = 1:30
+        transformed_image = custom_man(test_image_rgb, k);
+        transformed_power_consumption(k) = power_consumption(y,w0,wr,wg,wb,transformed_image);
+        transformed_image_difference(k) =  1 - ssim(test_image_rgb, transformed_image); 
+
+        if(transformed_image_difference(k) < avg_distortion(1))
+            if(transformed_power_consumption(k) < test_image_orginal_power)
+                image_list_1.best_hungry_blue_value_1(index) = k;
+                image_list_1.best_power_consumption_1(index) = ((test_image_orginal_power - transformed_power_consumption(k))/test_image_orginal_power)*100;
+            end
+        end
+        
+        if(transformed_image_difference(k) < avg_distortion(2))
+            if(transformed_power_consumption(k) < test_image_orginal_power)
+                image_list_1.best_hungry_blue_value_5(index) = k;
+                image_list_1.best_power_consumption_5(index) = ((test_image_orginal_power - transformed_power_consumption(k))/test_image_orginal_power)*100;
+            end
+        end
+        
+        if(transformed_image_difference(k) < avg_distortion(3))
+            if(transformed_power_consumption(k) < test_image_orginal_power)
+                image_list_1.best_hungry_blue_value_10(index) = k;
+                image_list_1.best_power_consumption_10(index) = ((test_image_orginal_power - transformed_power_consumption(k))/test_image_orginal_power)*100;
+            end
         end
     end
 end
-
-
-% for k = 1:length(image_list_1.dir)
-%     for const = hungry_blue_values
-%         transformed_image = hungry_blue(image_list_1_rgb{k}, const);
-%         transformed_power_consumption(k,mod(const/20,6)) = power_consumption(y,w0,wr,wg,wb,transformed_image);
-%         transformed_image_distortion(k,mod(const/20,6)) = (1 - ssim(image_list_1_rgb{k}, transformed_image))*100;
-%         transformed_image_difference(k,mod(const/20,6)) = ((image_diff(image_list_1_lab{k}, rgb2lab(transformed_image)))/ (length(image_list_1_rgb{k}(:,1,1)) * length(image_list_1_rgb{k}(1,:,1)) * sqrt(100.^2 + 255.^2 + 255.^2))) * 100;
-%     end
-%     image_list_1.hungry_blue_consumption(k,:) = transformed_power_consumption(k,:);
-%     image_list_1.hungry_blue_distortion(k,:) = transformed_image_distortion(k,:);
-%     image_list_1.hungry_blue_difference(k,:) = transformed_image_difference(k,:);
-% end
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -406,4 +854,13 @@ function transformed_image = hungry_blue(image, const)
         end
     end
     transformed_image = cat(3, R, G, B);
+end
+
+%
+%   Custom manipulation
+%
+function image_transformed = custom_man(image, value)
+    LOW_HIGH = stretchlim(image, [0.0001 0.9999]);
+    image_transformed = imadjust(image, LOW_HIGH);
+    image_transformed(:,:,3) = image_transformed(:,:,3) - value; 
 end

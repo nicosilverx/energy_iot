@@ -70,6 +70,40 @@ for i = 1:(higher_bound-lower_bound)
 end   
 freq_trimodal_idle_periods = (freq_mode_1 + freq_mode_2 + freq_mode_3) ./ 4998;
 
+
+% Realistic workload
+
+% Active
+active_mode_1 = round(normrnd(300, 10, [1 5000]));
+freq_active_mode_1 = zeros(1, 500);
+for i=1:max(active_mode_1)
+    for j=1:5000
+        if active_mode_1(1,j)==i
+            freq_active_mode_1(1,i)=freq_active_mode_1(1,i)+1;
+        end
+    end
+end
+freq_active_mode_1 = freq_active_mode_1 ./5000;
+% Idle
+mode_1 = round(normrnd(200, 10, [1 2500]));
+mode_2 = round(normrnd(600, 10, [1 2500]));
+lower_bound = min([mode_1 mode_2]);
+higher_bound = max([mode_1 mode_2]);
+freq_mode_1 = zeros(1, 800);
+freq_mode_2 = zeros(1, 800);
+for i = 1:(higher_bound)
+   for j = 1:2500
+      if mode_1(1,j)==i
+        freq_mode_1(1,i) = freq_mode_1(1,i) + 1;
+      end
+      if mode_2(1,j)==i
+        freq_mode_2(1,i) = freq_mode_2(1,i) + 1;
+      end
+   end
+end   
+freq_realistic_wl = (freq_mode_1 + freq_mode_2 ) ./ 5000;
+generate_workload('./wl_realistic.txt', active_mode_1, [mode_1 mode_2]);
+
 subplot(6,3,1)
 plot(active_periods)
 title("Active periods")
